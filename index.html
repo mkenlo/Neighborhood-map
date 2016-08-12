@@ -1,0 +1,92 @@
+<!doctype html>
+<html class="no-js" lang="">
+  <head>
+      <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge">
+      <title>Neighborhood Map</title>
+      <meta name="description" content="">
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        
+      <!-- Latest compiled and minified CSS -->
+      <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+
+      <!-- Latest compiled and minified JavaScript -->
+      <script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
+      <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+
+      <script src='https://cdnjs.cloudflare.com/ajax/libs/knockout/3.4.0/knockout-min.js'></script>
+
+    <!-- <script src='bower_components/knockout/dist/knockout.js'></script>-->
+      
+
+      <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
+      <link rel="stylesheet" href="css/main.css">
+  </head>
+  <body>
+  <header>
+    <nav class="navbar navbar-default navbar-burger navbar-transparent" role="navigation">
+      <!-- if you want to keep the navbar hidden you can add this class to the navbar "navbar-burger"-->
+      <div class="container">
+          <div class="navbar-header">
+              <button id="menu-toggle" type="button" class="navbar-toggle" data-toggle="collapse" data-target="#example">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar bar1"></span>
+              <span class="icon-bar bar2"></span>
+              <span class="icon-bar bar3"></span>
+              </button>
+              <a target="_blank" href="#" class="navbar-brand"><span class="glyphicon glyphicon-globe"></span>&nbsp;Neighborhood Map </a>
+          </div>
+          
+      </div>
+      </nav>
+  </header>  
+
+  <div class="container">
+    <div class="row">
+      <div class="col-md-6 col-lg-6 col-sm-6">
+        <form id="form-container" class="form-inline" data-bind="submit: onSubmit">    
+         <label for="city">Where do you want to go? </Label>   
+          <div class="input-group">
+            <input type="text" class="form-control" placeholder="Minneapolis, MN" id="city" data-bind="value: city">
+            <span class="input-group-btn">
+              <button id="submit-btn" class="btn btn-primary" type="submit">Visit</button>
+            </span>       
+          </div>      
+          
+      </form>
+      <br>
+      <p  data-bind="text: fsError"></p>
+    </div>
+    </div>
+    <br>
+   <div id="map-container" class="row">
+    <div class="col-md-3">
+     
+    <div class="list-view" >
+      <h3>Some interests in <small data-bind="text:city"></small></h3>
+       
+        <input type="text" class="form-control" placeholder="filter..." data-bind="value: filter , valueUpdate: 'afterkeydown', event:{keyup:filterList}">
+        
+      <div class="list-group" data-bind="foreach: listVenues">
+        <a href="#" class="list-group-item" data-bind="text: name"></a>        
+      </div>
+      
+    </div>
+    </div>
+    <div id="map" class="col-md-9 col-sm-9" ></div>
+    
+    
+    
+   </div>  
+    
+  </div> <!-- /container --> 
+  <footer>
+      <hr>
+      <p class="text-center">&copy; mkenlo 2016 </p>
+    </footer>
+    <script src="js/app.js"></script>    
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAp55t-sQo2JPisLbCJ2A5XHB7bGewXuPM&callback=initMap"
+    async defer></script>  
+  </body>
+</html>

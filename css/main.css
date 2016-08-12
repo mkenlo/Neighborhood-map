@@ -1,0 +1,63 @@
+
+
+/* ==========================================================================
+    custom styles
+   ========================================================================== */
+
+body {
+	
+	padding-bottom: 20px;
+    font-family: 'Open sans', sans-serif;
+    color:#2d3c49;
+}
+
+hr {
+	color:#2d3c49;
+
+}
+.navbar-default{
+	background-color: #303F9F;
+	color:#fff;
+}
+.navbar-default .navbar-brand{
+	color:#fff;
+}
+.navbar-default .navbar-toggle .icon-bar{
+	background-color: #fff;
+}
+
+#map-container{
+	height: 500px;
+}
+#map{
+	height:100%;
+}
+
+.row{
+	margin-bottom:10px;
+}
+.panel-marker .panel-heading{
+	background-color: #E1BEE7;
+	color:#9C27B0;
+	font-weight: bold;
+}
+.panel-marker-list{
+	list-style: none;
+	margin:0;
+}
+.panel-marker-list li{
+	padding-bottom:5px;
+}
+footer {
+	margin-top: 50px;
+	padding:20px;
+	text-align: center;
+}
+
+
+
+
+
+
+
+
