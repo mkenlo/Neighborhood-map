@@ -32,7 +32,10 @@ hr {
 #map{
 	height:100%;
 }
-
+.error{
+	color:#E91E63;
+	font-size: 14px;
+}
 .row{
 	margin-bottom:10px;
 }
