@@ -8,7 +8,8 @@ var FS_CLIENT_SECRET = "WBU23PY5WFX1F3TEM0MJ1DTSVIDPBWN1QNA1PKNP14HKM3AP";
 var FS_URL= "https://api.foursquare.com/v2/venues/search?client_id=%clt_id%&client_secret=%clt_scrt%&v=20130815&near=%city%";
 
 
-var venues=[];
+
+
 
 
 // defaults markers to initialize the map
@@ -21,6 +22,8 @@ defaultMarkers =[
 
 
 var map;
+var infoWindow;
+
 function initMap() {
    
     var mapOptions = {
@@ -28,6 +31,8 @@ function initMap() {
       zoom: 13
     }
     map = new google.maps.Map(document.getElementById('map'), mapOptions);
+    infoWindow = new google.maps.InfoWindow();
+
     //set markers
     for(i=0; i< defaultMarkers.length; i++){
         var position = new google.maps.LatLng(defaultMarkers[i].lat, defaultMarkers[i].lng);
@@ -36,12 +41,17 @@ function initMap() {
             defaultMarkers[i].marker(new google.maps.Marker({
             position: position,
             map: map,
-            title: defaultMarkers[i].name
+            title: defaultMarkers[i].name,
+            animation: google.maps.Animation.DROP
             }));
         }
     }    
     // add defaults markers on map
     updateMap(map, defaultMarkers);
+
+}
+function errorMap(){
+    // this is called if the google map API failed
 
 }
 
@@ -50,7 +60,6 @@ function removeDefaultMarkers(){
      for(i=0; i< defaultMarkers.length; i++){
         
         if(defaultMarkers[i].marker()){
-            console.log("marker "+i);
             defaultMarkers[i].marker().setMap(null);
             
         }
@@ -58,11 +67,31 @@ function removeDefaultMarkers(){
     
 }
 
+function infoWindowContent(location){
+    var content = "<div class='panel panel-marker'><div class='panel-heading'>%name%</div><div class='panel-body'>%description%</div></div>";
+    content = content.replace("%name%",location.name);
+    
+    var description = "<ul class='panel-marker-list'>";
+    var contact = location.contact ? location.contact:"unavailable";
+    var fulladdress = location.fulladdress ? location.fulladdress : "unavailable";
+    var url = link = location.url;
+    description += "<li><span class='glyphicon glyphicon-earphone'></span> "+contact+"</li>";
+    description += "<li><span class='glyphicon glyphicon-map-marker'></span> "+fulladdress+"</li>";
+    if(!url || url=="#"){
+        url = "unavailable";
+        link = "#";
+    }
+    description += "<li><span class='glyphicon glyphicon-link'></span> &nbsp;<a href='"+link+"'>"+url+"</a></li>";
+    description += "</ul>";
+
+    content = content.replace("%description%",description);
+    return content;
+
+}
+
 function updateMap(map, markers){
     
     var bounds = new google.maps.LatLngBounds();
-    /* add Listener for each marker*/
-    var infoWindow = new google.maps.InfoWindow();
     
     // add marker on map
     for( i = 0; i < markers.length; i++ ) {
@@ -72,16 +101,7 @@ function updateMap(map, markers){
 
             bounds.extend(position);
             var marker = markers[i].marker();          
-            var content = "<div class='panel panel-marker'><div class='panel-heading'>%name%</div><div class='panel-body'>%description%</div></div>";
-            content = content.replace("%name%",markers[i].name);
-            
-            var description = "<ul class='panel-marker-list'>";
-            description += "<li><span class='glyphicon glyphicon-earphone'></span> "+markers[i].contact+"</li>";
-            description += "<li><span class='glyphicon glyphicon-map-marker'></span> "+markers[i].fulladdress+"</li>";
-            description += "<li><span class='glyphicon glyphicon-link'></span> &nbsp;<a href='"+markers[i].url+"'>"+markers[i].url+"</a></li>";
-            description += "</ul>";
-
-            content = content.replace("%description%",description);
+            var content = infoWindowContent(markers[i]);
 
            google.maps.event.addListener(marker, 'click', (function(marker,content) {
                 return function() {
@@ -91,12 +111,12 @@ function updateMap(map, markers){
                     setTimeout(function(){ marker.setAnimation(null); }, 750);
                 }
             })(marker,content)); 
-
             // Event that closes the Info Window with a click on the map
             google.maps.event.addListener(map, 'click', function() {
                 infoWindow.close();
                 
             });
+            
         
         } // end if       
 
@@ -134,18 +154,22 @@ function MapViewModel() {
     
 
     var self = this;
-    self.city = ko.observable("Minneapolis,MN");
+    self.city = ko.observable();
     self.fsError = ko.observable("");
     self.filter = ko.observable("");
     self.listVenues = ko.observableArray(defaultMarkers);
     
     self.filterList = function(data, event) {
-        
+
+        google.maps.event.addDomListener($("#filter"), 'click', function() {
+            infoWindow.close();        
+        });
+
         var filter = self.filter().toString().toLowerCase();
         if(filter) { 
               
             $.each(self.listVenues(), function(i,item){
-                test = item.name.toLowerCase().startsWith(filter);
+                test = item.name.toLowerCase().indexOf(filter) >-1;
                 if(!test) {
                     item.marker().setVisible(false);
                     item.showMe(false);
@@ -176,6 +200,10 @@ function MapViewModel() {
                 item.marker().setVisible(false);
                 item.showMe(false);
                 self.filter(venue.name);
+
+                infoWindow.setContent(infoWindowContent(venue));                
+                infoWindow.open(map, venue.marker());
+                
             }
             
                               
@@ -187,8 +215,9 @@ function MapViewModel() {
         var url = FS_URL.replace("%clt_id%",FS_CLIENT_ID);
         url = url.replace("%clt_scrt%", FS_CLIENT_SECRET);
         url = url.replace("%city%",self.city());
+        url = url.concat("&query=food,restaurant"); 
         url = url.concat("&limit=10");  
-        
+       
      
         $.getJSON(url,function(result){
 
@@ -204,7 +233,8 @@ function MapViewModel() {
                 location.marker(new google.maps.Marker({
                     position: new google.maps.LatLng(venue.location.lat,venue.location.lng),
                     map: map,
-                    title: venue.name
+                    title: venue.name,
+                    animation: google.maps.Animation.DROP
                     }));
                 self.listVenues.push(location);
                 
@@ -219,6 +249,6 @@ function MapViewModel() {
     }
    
 };
-
+//closeAllInfoWindows();
 ko.applyBindings(new MapViewModel());
 

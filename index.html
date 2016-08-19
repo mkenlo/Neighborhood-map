@@ -8,16 +8,6 @@
       <meta name="viewport" content="width=device-width, initial-scale=1">
 
         
-      <!-- Latest compiled and minified CSS -->
-      <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
-
-      <!-- Latest compiled and minified JavaScript -->
-      <script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
-      <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
-
-      <script src='https://cdnjs.cloudflare.com/ajax/libs/knockout/3.4.0/knockout-min.js'></script>
-
-    <!-- <script src='bower_components/knockout/dist/knockout.js'></script>-->
       
 
       <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
@@ -25,11 +15,11 @@
   </head>
   <body>
   <header>
-    <nav class="navbar navbar-default navbar-burger navbar-transparent" role="navigation">
-      <!-- if you want to keep the navbar hidden you can add this class to the navbar "navbar-burger"-->
+    <nav class="navbar navbar-default navbar-burger navbar-transparent" >
+     
       <div class="container">
           <div class="navbar-header">
-              <button id="menu-toggle" type="button" class="navbar-toggle" data-toggle="collapse" data-target="#example">
+              <button id="menu-toggle" type="button" class="navbar-toggle" data-toggle="collapse" data-target=".list-view">
               <span class="sr-only">Toggle navigation</span>
               <span class="icon-bar bar1"></span>
               <span class="icon-bar bar2"></span>
@@ -43,7 +33,7 @@
   </header>  
 
   <div class="container">
-    <div class="row">
+    <div class="row" id="toggleForm">
       <div class="col-md-6 col-lg-6 col-sm-6">
         <form id="form-container" class="form-inline" data-bind="submit: onSubmit">    
          <label for="city">Where do you want to go? </Label>   
@@ -55,21 +45,22 @@
           </div>      
           
       </form>
-      <br>
-      <p class="error" data-bind="text: fsError"></p>
+      
     </div>
     </div>
     <br>
    <div id="map-container" class="row">
+    <div class="col-md-12">
+      <p class="error" data-bind="text: fsError"></p></div>
     <div class="col-md-3">
      
-    <div class="list-view" >
-      <h3>Some interests in <small data-bind="text:city"></small></h3>
+    <div class="list-view collapse navbar-collapse"  >
+      <h3>Some interests <small data-bind="text:city"></small></h3>
        
-        <input type="text" class="form-control" placeholder="filter..." data-bind="textInput: filter , valueUpdate: 'afterkeydown', event:{keyup:filterList}">
+        <input id="filter" type="text" class="form-control" placeholder="filter..." data-bind="textInput: filter , event:{keyup:filterList}">
         
       <div class="list-group" data-bind="foreach: listVenues">
-        <a href="#" class="list-group-item" data-bind="text: name, visible: showMe, click:$parent.clickVenue"></a>        
+        <p style="cursor: pointer;" class="list-group-item" data-bind="text: name, visible: showMe, click:$parent.clickVenue"></p>        
       </div>
       
     </div>
@@ -84,10 +75,21 @@
   <footer>
       <hr>
       <p class="text-center">&copy; mkenlo 2016 </p>
-    </footer>
-       
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAp55t-sQo2JPisLbCJ2A5XHB7bGewXuPM&callback=initMap"
-    async defer></script> 
-    <script src="js/app.js"></script>  
+  </footer>
+
+    <!-- Latest compiled and minified CSS -->
+      <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+
+      <!-- Latest compiled and minified JavaScript -->
+      <script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
+      <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+
+      <script src='https://cdnjs.cloudflare.com/ajax/libs/knockout/3.4.0/knockout-min.js'></script>
+
+   
+      
+     <script src="js/app.js"></script>   
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAp55t-sQo2JPisLbCJ2A5XHB7bGewXuPM&callback=initMap"  onerror="errorMap()" async defer></script> 
+     
   </body>
 </html>
