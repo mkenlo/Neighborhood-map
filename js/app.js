@@ -8,10 +8,6 @@ var FS_CLIENT_SECRET = "WBU23PY5WFX1F3TEM0MJ1DTSVIDPBWN1QNA1PKNP14HKM3AP";
 var FS_URL= "https://api.foursquare.com/v2/venues/search?client_id=%clt_id%&client_secret=%clt_scrt%&v=20130815&near=%city%";
 
 
-
-
-
-
 // defaults markers to initialize the map
 defaultMarkers =[
         new Locations("Ike's Food & Cocktails","(612) 746-4537","50 S 6th St","",44.97818705436708,-93.27229499816895),
@@ -51,7 +47,8 @@ function initMap() {
 
 }
 function errorMap(){
-    // this is called if the google map API failed
+    // this is called when google map API failed
+    $("#map").append("<p class='alert alert-danger'>Ooops!!! For some reasons we could not load MAP</p>")
 
 }
 
@@ -135,12 +132,12 @@ function updateMap(map, markers){
         
 }
 
-function Locations(name, contact, fulladress, url, lat, lng){
+function Locations(name, contact, fulladdress, url, lat, lng){
     var self = this;
     self.name= name;
     self.contact = contact;
     self.url = url;
-    self.fulladress = fulladress;
+    self.fulladdress = fulladdress;
     self.lat = lat;
     self.lng = lng;
     self.showMe = ko.observable(true);
@@ -157,13 +154,12 @@ function MapViewModel() {
     self.city = ko.observable();
     self.fsError = ko.observable("");
     self.filter = ko.observable("");
+    self.isSelected = ko.observable(false);
     self.listVenues = ko.observableArray(defaultMarkers);
     
     self.filterList = function(data, event) {
 
-        google.maps.event.addDomListener($("#filter"), 'click', function() {
-            infoWindow.close();        
-        });
+        //self.closeWindow();
 
         var filter = self.filter().toString().toLowerCase();
         if(filter) { 
@@ -201,6 +197,7 @@ function MapViewModel() {
                 item.showMe(false);
                 self.filter(venue.name);
 
+                self.isSelected(true);
                 infoWindow.setContent(infoWindowContent(venue));                
                 infoWindow.open(map, venue.marker());
                 
@@ -210,6 +207,13 @@ function MapViewModel() {
         });
         
     }
+
+    self.closeInfoWindow = function() {
+        if ( self.isSelected() ) {
+          infoWindow.close();
+        }
+    };
+
     self.onSubmit = function(){
         
         var url = FS_URL.replace("%clt_id%",FS_CLIENT_ID);
@@ -249,6 +253,6 @@ function MapViewModel() {
     }
    
 };
-//closeAllInfoWindows();
+
 ko.applyBindings(new MapViewModel());
 
