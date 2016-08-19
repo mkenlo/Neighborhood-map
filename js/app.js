@@ -25,7 +25,7 @@ function initMap() {
     var mapOptions = {
       center: {lat: 38.9165087, lng: -77.2482606}, // coordinates for a random place in Minneapolis, MN
       zoom: 13
-    }
+    };
     map = new google.maps.Map(document.getElementById('map'), mapOptions);
     infoWindow = new google.maps.InfoWindow();
 
@@ -46,9 +46,10 @@ function initMap() {
     updateMap(map, defaultMarkers);
 
 }
+
 function errorMap(){
     // this is called when google map API failed
-    $("#map").append("<p class='alert alert-danger'>Ooops!!! For some reasons we could not load MAP</p>")
+    $("#map").append("<p class='alert alert-danger'>Ooops!!! For some reasons we could not load MAP</p>");
 
 }
 
@@ -56,12 +57,27 @@ function removeDefaultMarkers(){
     
      for(i=0; i< defaultMarkers.length; i++){
         
-        if(defaultMarkers[i].marker()){
+        if(defaultMarkers[i].marker())
             defaultMarkers[i].marker().setMap(null);
-            
-        }
+      
     }
     
+}
+
+function setInfoWindow(marker, content){
+    google.maps.event.addListener(marker, 'click', (function(marker,content) {
+        return function() {
+            infoWindow.setContent(content);
+            infoWindow.open(map, marker);
+            marker.setAnimation(google.maps.Animation.BOUNCE);
+            setTimeout(function(){ marker.setAnimation(null); }, 750);
+        };
+    })(marker,content)); 
+    
+    // Event that closes the Info Window with a click on the map
+    google.maps.event.addListener(map, 'click', function() {
+        infoWindow.close();
+    });
 }
 
 function infoWindowContent(location){
@@ -71,7 +87,8 @@ function infoWindowContent(location){
     var description = "<ul class='panel-marker-list'>";
     var contact = location.contact ? location.contact:"unavailable";
     var fulladdress = location.fulladdress ? location.fulladdress : "unavailable";
-    var url = link = location.url;
+    var url =  location.url;
+    var link = url;
     description += "<li><span class='glyphicon glyphicon-earphone'></span> "+contact+"</li>";
     description += "<li><span class='glyphicon glyphicon-map-marker'></span> "+fulladdress+"</li>";
     if(!url || url=="#"){
@@ -93,31 +110,15 @@ function updateMap(map, markers){
     // add marker on map
     for( i = 0; i < markers.length; i++ ) {
         var position = new google.maps.LatLng(markers[i].lat, markers[i].lng);
-        
+
         if (markers[i].showMe()){
 
             bounds.extend(position);
             var marker = markers[i].marker();          
             var content = infoWindowContent(markers[i]);
-
-           google.maps.event.addListener(marker, 'click', (function(marker,content) {
-                return function() {
-                    infoWindow.setContent(content);
-                    infoWindow.open(map, marker);
-                    marker.setAnimation(google.maps.Animation.BOUNCE);
-                    setTimeout(function(){ marker.setAnimation(null); }, 750);
-                }
-            })(marker,content)); 
-            // Event that closes the Info Window with a click on the map
-            google.maps.event.addListener(map, 'click', function() {
-                infoWindow.close();
-                
-            });
-            
-        
-        } // end if       
-
-    } //end for
+            setInfoWindow(marker, content);
+        }  
+    }
        
     map.fitBounds(bounds);
 
@@ -171,7 +172,7 @@ function MapViewModel() {
                     item.showMe(false);
                     
                 }
-                else if((event.keyCode == 8 || event.keyCode ==46) & !item.showMe()){
+                else if((event.keyCode == 8 || event.keyCode ==46) && !item.showMe()){
                     item.marker().setVisible(true);
                     item.showMe(true);
                 }                    
@@ -206,7 +207,7 @@ function MapViewModel() {
                               
         });
         
-    }
+    };
 
     self.closeInfoWindow = function() {
         if ( self.isSelected() ) {
@@ -250,9 +251,9 @@ function MapViewModel() {
             self.fsError("Oops!! Sorry, for some reasons the request failed ");
             
         });
-    }
+    };
    
-};
+}
 
 ko.applyBindings(new MapViewModel());
 
