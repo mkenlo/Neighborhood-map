@@ -48,12 +48,14 @@ function initMap() {
 }
 
 function errorMap(){
+    "use strict";
     // this is called when google map API failed
     $("#map").append("<p class='alert alert-danger'>Ooops!!! For some reasons we could not load MAP</p>");
 
 }
 
 function removeDefaultMarkers(){
+    "use strict";
     
      for(i=0; i< defaultMarkers.length; i++){
         
@@ -65,12 +67,17 @@ function removeDefaultMarkers(){
 }
 
 function setInfoWindow(marker, content){
+    "use strict";
     google.maps.event.addListener(marker, 'click', (function(marker,content) {
         return function() {
             infoWindow.setContent(content);
             infoWindow.open(map, marker);
+
+            animateMarker(marker);
+
             marker.setAnimation(google.maps.Animation.BOUNCE);
             setTimeout(function(){ marker.setAnimation(null); }, 750);
+
         };
     })(marker,content)); 
     
@@ -80,7 +87,15 @@ function setInfoWindow(marker, content){
     });
 }
 
+
+function animateMarker(marker){
+    "use strict";
+	marker.setAnimation(google.maps.Animation.BOUNCE);
+    setTimeout(function(){ marker.setAnimation(null); }, 750);
+}
+
 function infoWindowContent(location){
+    "use strict";
     var content = "<div class='panel panel-marker'><div class='panel-heading'>%name%</div><div class='panel-body'>%description%</div></div>";
     content = content.replace("%name%",location.name);
     
@@ -91,7 +106,9 @@ function infoWindowContent(location){
     var link = url;
     description += "<li><span class='glyphicon glyphicon-earphone'></span> "+contact+"</li>";
     description += "<li><span class='glyphicon glyphicon-map-marker'></span> "+fulladdress+"</li>";
-    if(!url || url=="#"){
+
+    if(!url || url==="#"){
+
         url = "unavailable";
         link = "#";
     }
@@ -104,15 +121,13 @@ function infoWindowContent(location){
 }
 
 function updateMap(map, markers){
-    
+    "use strict";
     var bounds = new google.maps.LatLngBounds();
     
     // add marker on map
     for( i = 0; i < markers.length; i++ ) {
         var position = new google.maps.LatLng(markers[i].lat, markers[i].lng);
-
         if (markers[i].showMe()){
-
             bounds.extend(position);
             var marker = markers[i].marker();          
             var content = infoWindowContent(markers[i]);
@@ -160,8 +175,6 @@ function MapViewModel() {
     
     self.filterList = function(data, event) {
 
-        //self.closeWindow();
-
         var filter = self.filter().toString().toLowerCase();
         if(filter) { 
               
@@ -197,13 +210,11 @@ function MapViewModel() {
                 item.marker().setVisible(false);
                 item.showMe(false);
                 self.filter(venue.name);
-
                 self.isSelected(true);
                 infoWindow.setContent(infoWindowContent(venue));                
                 infoWindow.open(map, venue.marker());
-                
-            }
-            
+                animateMarker(venue.marker());
+           }
                               
         });
         
@@ -222,8 +233,7 @@ function MapViewModel() {
         url = url.replace("%city%",self.city());
         url = url.concat("&query=food,restaurant"); 
         url = url.concat("&limit=10");  
-       
-     
+
         $.getJSON(url,function(result){
 
             removeDefaultMarkers();
